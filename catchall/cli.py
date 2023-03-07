@@ -34,7 +34,7 @@ def read_example_cli():
 	"""Summarize the data we already collected."""
 	return read_output()
 
-@cli_parent.command('mpi')
+@cli_parent.command('parallel')
 @click.help_option('-h','--help')
 @click.option('-n','--num',help='Number of iterations',default=10)
 def worker_example_parallel_cli(*,num): 

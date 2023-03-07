@@ -58,19 +58,32 @@ def traverse_datasets(hdf_file):
 		yield path
 
 def save(data,filename,address,subkey,
-	do_lock=True,kwargs_h5=None):
+	do_lock=True,kwargs_h5=None,write_mode=None,atomic=True):
 	"""
 	Save data to an H5 file via queue with a consistent naming scheme.
 	"""
 	if kwargs_h5 == None:
 		kwargs_h5 = {}
+	if write_mode == None:
+		write_mode = 'a'
+	if write_mode not in ['a','w']:
+		raise Exception(f'invalid write mode: {write_mode}')
 	# make sure you use append or you will be severely confused!
-	with H5WriteLocker(filename,'a',do_lock=do_lock,**kwargs_h5) as store:
+	with H5WriteLocker(filename,write_mode,do_lock=do_lock,**kwargs_h5) \
+		as store:
+		# dev: is this necessary?
+		if atomic:
+			store.atomic = False
 		keys = store.keys()
 		key = os.path.join(address,subkey)
 		head,tail = os.path.dirname(key),os.path.basename(key)
 		try: 
-			store.require_group(head)
+			try: 
+				store.require_group(head)
+				# store.create_group(head)
+			# dev: more clear exception
+			except:
+				pass
 			group = store[head]
 			if tail in group.keys():
 				print(
@@ -80,7 +93,9 @@ def save(data,filename,address,subkey,
 				data=data,
 				dtype=data.dtype.str)
 		except Exception as e:
-			print(f'error: failing to serialize type {data.dtype.str}: {data}')
+			print(
+				f'error: failing to serialize type {data.dtype.str}: {data}, '
+				f'exception {e}')
 			raise
 
 def get_filename():
@@ -88,7 +103,8 @@ def get_filename():
 	filename = os.path.abspath(os.path.join(os.getcwd(),'output.h5'))
 	return filename
 
-def compute_worker(num=None,address=None,do_lock=True,kwargs_h5=None):
+def compute_worker(num=None,address=None,
+	do_lock=True,kwargs_h5=None,write_mode=None):
 	"""
 	Perform a series of standard deviation benchmark calculations as an example.
 	Uses the `save` function which relies on `H5WriteLocker` to queue writes. 
@@ -112,6 +128,7 @@ def compute_worker(num=None,address=None,do_lock=True,kwargs_h5=None):
 			address=address,
 			subkey=ts,
 			do_lock=do_lock,
+			write_mode=write_mode,
 			kwargs_h5=kwargs_h5)
 		read_output(verbose=False)
 		print('status: done')

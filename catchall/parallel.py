@@ -17,7 +17,18 @@ def compute_worker_parallel(num=None):
 	kwargs_h5 = dict(
 		driver='mpio',
 		comm=MPI.COMM_WORLD,)
+	# dev: if you attach rank to result, you get an error that seems to be 
+	#   related to the warning on the docs, see
+	#     https://docs.h5py.org/en/latest/\
+	#        mpi.html#collective-versus-independent-operations
+	#   that says "all processes must do this". the easiest solution is to use
+	#   the same group address. another option is to require_group in each of 
+	#   the ranks, which probably organizes the format of the data
+	#   related error is
+	#     File "h5py/h5g.pyx", line 166, in h5py.h5g.create
+	#     ValueError: Unable to create group (bad symbol table node signature)
 	return compute_worker(
-		address=f'result-{rank}',
-			do_lock=False,
-			kwargs_h5=kwargs_h5)
+		address=f'result',
+		do_lock=False,
+		write_mode='a',
+		kwargs_h5=kwargs_h5)

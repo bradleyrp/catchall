@@ -24,7 +24,6 @@ def cli_parent(ctx,debug):
 @cli_parent.command('calc')
 @click.help_option('-h','--help')
 @click.option('-n','--num',help='Number of iterations',default=10)
-
 def worker_example_cli(*,num): 
 	"""Perform an example calculation."""
 	return compute_worker(num=num)
@@ -34,6 +33,16 @@ def worker_example_cli(*,num):
 def read_example_cli(): 
 	"""Summarize the data we already collected."""
 	return read_output()
+
+@cli_parent.command('mpi')
+@click.help_option('-h','--help')
+@click.option('-n','--num',help='Number of iterations',default=10)
+def worker_example_parallel_cli(*,num): 
+	"""Perform an example of parallel writes."""
+	# importing here in case mpi4py is not available
+	# dev: make this a separate extras requirement in setup
+	from .parallel import compute_worker_parallel
+	return compute_worker_parallel(num=num)
 
 ### CLI
 

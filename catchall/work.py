@@ -12,9 +12,14 @@ class H5WriteLocker(h5pyFile):
 	"""
 	Queue writes to a single HDF5 file.
 	"""
-	def __init__(self,*args,**kwargs):
+	def __init__(self,*args,do_lock=True,**kwargs):
 		probe_interval = kwargs.pop("probe_interval", 1)
 		self._lock = "%s.lock" % args[0]
+		self._do_lock = do_lock
+		if not self._do_lock:
+			super().__init__(*args,**kwargs)
+			return
+		# standard locking behavior
 		while True:
 			try:
 				# via: https://stackoverflow.com/a/29014295
@@ -32,11 +37,14 @@ class H5WriteLocker(h5pyFile):
 			raise
 	def __exit__(self, *args, **kwargs):
 		super().__exit__(self, *args, **kwargs)
-		os.close(self._flock)
-		os.remove(self._lock)
+		if self._do_lock:
+			os.close(self._flock)
+			os.remove(self._lock)
 
 def traverse_datasets(hdf_file):
-	"""Read nested arbitrary datasets with h5py."""
+	"""
+	Read nested arbitrary datasets with h5py.
+	"""
 	# via: https://stackoverflow.com/a/51548857
 	def h5py_dataset_iterator(g, prefix=''):
 		for key in g.keys():
@@ -49,22 +57,24 @@ def traverse_datasets(hdf_file):
 	for path, _ in h5py_dataset_iterator(hdf_file):
 		yield path
 
-def save(data,filename,address,subkey):
+def save(data,filename,address,subkey,
+	do_lock=True,kwargs_h5=None):
 	"""
 	Save data to an H5 file via queue with a consistent naming scheme.
 	"""
+	if kwargs_h5 == None:
+		kwargs_h5 = {}
 	# make sure you use append or you will be severely confused!
-	with H5WriteLocker(filename,'a') as store:
+	with H5WriteLocker(filename,'a',do_lock=do_lock,**kwargs_h5) as store:
 		keys = store.keys()
 		key = os.path.join(address,subkey)
 		head,tail = os.path.dirname(key),os.path.basename(key)
 		try: 
 			store.require_group(head)
 			group = store[head]
-			print(group.keys())
-			print(tail)
 			if tail in group.keys():
-				print(f'warning: possible collision on key {key} hence aborting')
+				print(
+					f'warning: possible collision on key {key} hence discard')
 				return
 			group.create_dataset(tail,
 				data=data,
@@ -78,7 +88,15 @@ def get_filename():
 	filename = os.path.abspath(os.path.join(os.getcwd(),'output.h5'))
 	return filename
 
-def compute_worker(num=None):
+def compute_worker(num=None,address=None,do_lock=True,kwargs_h5=None):
+	"""
+	Perform a series of standard deviation benchmark calculations as an example.
+	Uses the `save` function which relies on `H5WriteLocker` to queue writes. 
+	"""
+	if kwargs_h5 == None:
+		kwargs_h5 = {}
+	if address == None:
+		address = 'result'
 	filename = get_filename()
 	it = 0
 	while True:
@@ -91,16 +109,24 @@ def compute_worker(num=None):
 		save(
 			data=data_this,
 			filename=filename,
-			address='result',
-			subkey=ts)
-		read_output()
+			address=address,
+			subkey=ts,
+			do_lock=do_lock,
+			kwargs_h5=kwargs_h5)
+		read_output(verbose=False)
 		print('status: done')
 		it += 1
 		if num != None and it >= num:
 			break
 
-def read_output():
+def read_output(verbose=False):
+	"""Traverse paths in the output."""
 	filename = get_filename()
 	with h5pyFile(filename,'r') as store:
+		nitems = 0
 		for path in traverse_datasets(store):
-			print(path)
+			if verbose:
+				print(path)
+			nitems += 1
+	print(f'status: file {filename} has {nitems} items')
+

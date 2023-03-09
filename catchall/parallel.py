@@ -3,6 +3,7 @@
 
 import h5py
 from mpi4py import MPI
+import numpy as np
 from .work import compute_worker
 
 def compute_worker_parallel(num=None):

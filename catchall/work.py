@@ -6,6 +6,7 @@ import time
 import datetime as dt
 import h5py
 from h5py import File as h5pyFile
+import numpy as np
 from .test_stddev import stddev_benchmark
 
 class H5WriteLocker(h5pyFile):
@@ -71,9 +72,7 @@ def save(data,filename,address,subkey,
 	# make sure you use append or you will be severely confused!
 	with H5WriteLocker(filename,write_mode,do_lock=do_lock,**kwargs_h5) \
 		as store:
-		# dev: is this necessary?
-		if atomic:
-			store.atomic = False
+		# dev: consider setting atomic when using MPI with store.atomic
 		keys = store.keys()
 		key = os.path.join(address,subkey)
 		head,tail = os.path.dirname(key),os.path.basename(key)
@@ -109,6 +108,8 @@ def compute_worker(num=None,address=None,
 	Perform a series of standard deviation benchmark calculations as an example.
 	Uses the `save` function which relies on `H5WriteLocker` to queue writes. 
 	"""
+	# in catchall.parallel, we add rank to the seed, here we decrement one
+	np.random.seed(746574366 - 1)
 	if kwargs_h5 == None:
 		kwargs_h5 = {}
 	if address == None:
@@ -119,9 +120,7 @@ def compute_worker(num=None,address=None,
 		# select the appropriate interval, recording milliseconds here
 		ts = (dt.datetime.strftime(
 			dt.datetime.now(),'%Y.%m.%d.%H%M.%S.%f')[:-3])
-		print('status: compute')
 		data_this = stddev_benchmark()
-		print('status: save')
 		save(
 			data=data_this,
 			filename=filename,
@@ -131,7 +130,6 @@ def compute_worker(num=None,address=None,
 			write_mode=write_mode,
 			kwargs_h5=kwargs_h5)
 		read_output(verbose=False)
-		print('status: done')
 		it += 1
 		if num != None and it >= num:
 			break
@@ -145,5 +143,5 @@ def read_output(verbose=False):
 			if verbose:
 				print(path)
 			nitems += 1
-	print(f'status: file {filename} has {nitems} items')
+	print(f'status: file {filename} has {nitems} results')
 

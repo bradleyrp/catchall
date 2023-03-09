@@ -3,3 +3,4 @@ catchall/_version.py
 .eggs/
 spack/
 venv/
+catchall/*.so

@@ -17,6 +17,8 @@ def compute_worker_parallel(num=None):
 	kwargs_h5 = dict(
 		driver='mpio',
 		comm=MPI.COMM_WORLD,)
+	# set a random seed by rank
+	np.random.seed(746574366 + rank)
 	# dev: if you attach rank to result, you get an error that seems to be 
 	#   related to the warning on the docs, see
 	#     https://docs.h5py.org/en/latest/\

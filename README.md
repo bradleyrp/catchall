@@ -40,10 +40,11 @@ spack:
   - py-pip ^python@3.10.8
   - openmpi%gcc@12.2.0
   - hdf5+mpi+shared ^openmpi%gcc@12.2.0
+  - py-numpy ^python@3.10.8 ^intel-oneapi-mkl 
   - py-h5py ^python@3.10.8 ^openmpi %gcc@12.2.0
   view: true
   concretizer:
-    unify: true
+    unify: when_possible
 EOF
 # install
 spack concretize -f 

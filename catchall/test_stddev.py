@@ -19,13 +19,14 @@ def stddev_benchmark(*,testseq=None):
 	np_time = []
 	c_time = []
 	for l in testseq:
-		rands = [random.random() for _ in range(0, l)]
+		# standard: rands = [random.random() for _ in range(0, l)]
+		rands = list(np.random.random(size=(l,)))
 		numpy_rands = np.array(rands)
 		np_time = np.append(np_time,
 			timeit.timeit(lambda: np.std(numpy_rands), number=1000))
 		c_time = np.append(c_time,
 			timeit.timeit(lambda: standard_dev(rands), number=1000))
-	data = np.array([np.transpose(np_time), np.transpose(c_time)])
+	data = np.array([testseq, np.transpose(np_time), np.transpose(c_time)])
 	return data
 
 def compare_numpy_ext(n=20000):
@@ -50,4 +51,3 @@ class TestStdDev(unittest.TestCase):
 
 if __name__ == '__main__':
 	unittest.main()
-

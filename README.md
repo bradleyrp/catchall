@@ -72,3 +72,14 @@ make install
 ~~~
 
 You can use `source path/to/catchall/go.sh` to activate this environment from anywhere.
+
+### Repurpose
+
+You can change the name `catchall` to `something_else` throughout the code with:
+
+~~~
+# macos
+git grep -rl catchall . | xargs sed -i "" -e 's#catchall#something_else#g'
+# linux
+git grep -rl catchall . | xargs sed -e 's#catchall#something_else#g'
+~~~

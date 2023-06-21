@@ -14,7 +14,7 @@ from .work import read_output
 @click.pass_context
 def cli_parent(ctx,debug):
 	"""
-	Router for the `books` code. Sends commands to subcommands.
+	Router for the `catchall` code. Sends commands to subcommands.
 	"""
 	# via https://click.palletsprojects.com/en/8.0.x/commands/
 	# ensure that ctx.obj exists and is a dict in case `cli` is called elsewhere

@@ -1,0 +1,53 @@
+%%% LOGO
+\setbeamertemplate{page in head/foot}[framenumber]
+\setbeamertemplate{page number in head/foot}[framenumber]
+% logo at the top right or bottom right
+% the aspect ratio determines the vspace: 54 -> 222pt
+\logo{\includegraphics[height=0.48cm]{pics/logo.eps}\hspace{2pt}\vspace{222pt}}
+
+%%% COLORS
+\definecolor{lehighbrown}{rgb}{0.314,0.176,0.055}
+\definecolor{gryphongold}{rgb}{0.984,0.867,0.251}
+\definecolor{tan}{rgb}{0.725,0.592,0.357}
+
+% allow max width in figures
+\usepackage[export]{adjustbox}
+
+% use fc-list to get a font list
+% \usepackage{fontspec}
+% \setsansfont{Helvetica Neue}
+
+%%% THEME AND COLORS
+% \usetheme{Warsaw}
+\usetheme{Boadilla}
+% \useoutertheme{miniframes} % alternatively: miniframes, infolines, split
+\useoutertheme[subsection=false]{miniframes} 
+% \useoutertheme[]{split}
+\useinnertheme{circles}
+\setbeamercolor{palette primary}{bg=black,fg=white}
+\setbeamercolor{palette secondary}{bg=tan,fg=white}
+\setbeamercolor{palette tertiary}{bg=lehighbrown,fg=white}
+\setbeamercolor{palette quaternary}{bg=lehighbrown,fg=white}
+\setbeamercolor{structure}{fg=lehighbrown} % itemize, enumerate, etc
+\setbeamercolor{section in toc}{fg=lehighbrown} % toc sections
+\setbeamercolor{subsection in head/foot}{bg=tan,fg=white}
+
+% set background on code so it pops
+\usepackage{xcolor}
+\usepackage{soul}
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{
+  \colorbox{gryphongold}{\oldtexttt{#1}}
+}
+
+% via: https://tex.stackexchange.com/a/337587
+% mystylefile.pandoc
+\usepackage{tcolorbox}
+% \newtcolorbox{myquote}{colback=red!5!white, colframe=red!75!black}
+\newtcolorbox{myquote}{colback=gryphongold!50!white, colframe=lehighbrown}
+% redefine the 'quote' environment to use this 'myquote' environment
+\renewenvironment{quote}{\begin{myquote}}{\end{myquote}}
+
+% for grids of figures
+\usepackage{subfig}
+

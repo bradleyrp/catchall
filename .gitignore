@@ -1,6 +1,10 @@
-catchall/_version.py
+**/_version.py
 **/__pycache__
+*.egg-info/
 .eggs/
 spack/
+build/
 venv/
-catchall/*.so
+**/*.so
+press/raw
+press/pub

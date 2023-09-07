@@ -2,7 +2,10 @@
 # vim: noet:ts=4:sts=4:sw=4
 
 import h5py
-from mpi4py import MPI
+try:
+	from mpi4py import MPI
+except ModuleNotFoundError:
+	raise Exception('cannot import mpi4py. try "make allinstall"')
 import numpy as np
 from .work import compute_worker
 

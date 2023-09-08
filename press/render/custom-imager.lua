@@ -72,7 +72,7 @@ end
 
 -- customizing paths for rendering on github-like platforms
 function find_pics_md (path)
-  return '../raw/pics/' .. path
+  return '../pics/' .. path
 end
 
 if FORMAT:match 'html' then

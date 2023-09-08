@@ -18,7 +18,7 @@ TARGETS_docx:=$(patsubst raw/%.md, pub/%.docx, ${SOURCES})
 
 # publish in all formats
 all: \
-	pub pub/pics pub/render \
+	pub pub/render \
 	${TARGETS_html} ${TARGETS_md} ${TARGETS_pdf} ${TARGETS_docx}
 ifndef HAS_LROCKS
 	@echo "error: cannot find lua path"
@@ -33,8 +33,6 @@ pub:
 	mkdir -p ./pub
 pub/render:
 	cd pub && ln -s ../render
-pub/pics:
-	if [ -d raw/pics ]; then cd pub && ln -s ../raw/pics; fi
 
 clean:
 	rm -rf pub/

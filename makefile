@@ -13,7 +13,7 @@ ifeq ($(PYTHON_VERSION_OK), 0)
 endif
 
 # shortcut list
-.PHONY: install installall clean test notebook press
+.PHONY: install allinstall clean test notebook press
 all:
 	@echo "usage: \"make install\" creates a virtual environment"
 	@echo "usage: \"source ./go.sh\" sources the environment from anywhere"
@@ -33,7 +33,7 @@ install: venv .git
 # install the science package
 HAS_MPICC := $(shell command -v mpicc 2> /dev/null)
 allinstall: venv .git
-ifndef DOT
+ifndef HAS_MPICC
 	$(error "mpicc is not available")
 endif
 	venv/bin/pip install -U -e .[all]

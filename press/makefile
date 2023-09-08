@@ -4,9 +4,10 @@
 # prelim: eval "$(luarocks path --bin)"
 
 SHELL:=/bin/bash
+HAS_LROCKS := $(shell echo "$${LUA_PATH}" 2> /dev/null)
 
 # commands
-.PHONY: install grip check
+.PHONY:
 
 # targets
 SOURCES:=$(shell find raw/ -name '*.md' -print)
@@ -19,18 +20,13 @@ TARGETS_docx:=$(patsubst raw/%.md, pub/%.docx, ${SOURCES})
 all: \
 	pub pub/pics pub/render \
 	${TARGETS_html} ${TARGETS_md} ${TARGETS_pdf} ${TARGETS_docx}
-	
+ifndef HAS_LROCKS
+	@echo "error: cannot find lua path"
+	@echo 'usage: eval "$$(luarocks path --bin)"'
+endif
+
 # settings
 SOURCE_FORMAT="markdown+pipe_tables+backtick_code_blocks+auto_identifiers+strikeout+yaml_metadata_block+implicit_figures+all_symbols_escapable+link_attributes+smart+fenced_divs"
-
-#! # use grip to render github-flavored markdown offline
-#! install: venv venv/bin/grip
-#! venv:
-#! 	python3 -m venv venv
-#! venv/bin/grip:
-#! 	source venv/bin/activate && pip install grip
-#! grip:
-#! 	venv/bin/grip
 
 # prepare links
 pub:

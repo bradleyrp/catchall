@@ -70,11 +70,10 @@ function find_pics (path)
   return 'pics/' .. path
 end
 
--- for markdown to render on gogs we need a different path
+-- customizing paths for rendering on github-like platforms
 function find_pics_md (path)
-  return '../pics/' .. path
+  return '../raw/pics/' .. path
 end
-
 
 if FORMAT:match 'html' then
   function CodeBlock (el)
@@ -116,7 +115,8 @@ if FORMAT:match 'html' then
   end
 end
 
-if FORMAT:match 'markdown' then
+-- note that the docx version is incomplete
+if FORMAT:match 'markdown' or FORMAT:match 'docx' then
   function CodeBlock (el)
     if el.classes[1] == custom_figure_tag then
       data = lyaml.load(el.text)

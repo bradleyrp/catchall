@@ -8,3 +8,5 @@ venv/
 **/*.so
 press/raw
 press/pub
+press/README.md
+**/.DS_Store

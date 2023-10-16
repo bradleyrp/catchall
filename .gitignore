@@ -11,3 +11,5 @@ press/pub
 press/pics
 press/README.md
 **/.DS_Store
+credentials.json
+token.json

@@ -13,7 +13,9 @@ ifeq ($(PYTHON_VERSION_OK), 0)
 endif
 
 # shortcut list
-.PHONY: install allinstall clean test notebook press
+.PHONY: \
+	install allinstall clean test notebook press \
+	gdrive_install gdrive gpub
 all:
 	@echo "usage: \"make install\" creates a virtual environment"
 	@echo "usage: \"source ./go.sh\" sources the environment from anywhere"
@@ -36,7 +38,7 @@ allinstall: venv .git
 ifndef HAS_MPICC
 	$(error "mpicc is not available")
 endif
-	venv/bin/pip install -U -e .[all]
+	venv/bin/pip install -U -e ".[all]"
 
 # uninstall
 clean:
@@ -51,6 +53,27 @@ notebook:
 	echo "warning: use Firefox on MacOS due to weird blank page issue"
 	python -m notebook --no-browser
 
+# subvert makefile to send arguments to other consumers with filter-out
+# warning: this might affect other targets
+# via https://stackoverflow.com/a/6273809
+%:
+	@:
+
 # render documentation
 press:
 	@bash -c "eval \"$$(luarocks path --bin)\" && make -s -C press"
+
+# prototype interface to google drive
+gdrive_install: venv
+	./venv/bin/pip install --upgrade pip -U -e ".[gdrive]"
+gdrivedev:
+	echo "status: running gdrive dev code"
+	./venv/bin/python -c 'import google' || \
+		echo "error: install google via: make gdrive_install"
+	./venv/bin/python -m ortho interact -i press/render/gdrive.py
+gdrive:
+	./venv/bin/gpress menu
+
+# publish to google drive by shortname
+gpub:
+	./venv/bin/gpress pub $(filter-out $@,$(MAKECMDGOALS))

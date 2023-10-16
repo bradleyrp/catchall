@@ -1,5 +1,6 @@
 # PRESS
 # publish simple markdown documentation to different formats
+# part of github.com/bradleyrp/catchall
 
 # prelim: eval "$(luarocks path --bin)"
 

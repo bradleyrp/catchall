@@ -15,7 +15,7 @@ endif
 # shortcut list
 .PHONY: \
 	install allinstall clean test notebook press \
-	gdrive_install gdrive gpub
+	gpress_install gpress gdoc
 all:
 	@echo "usage: \"make install\" creates a virtual environment"
 	@echo "usage: \"source ./go.sh\" sources the environment from anywhere"
@@ -64,16 +64,16 @@ press:
 	@bash -c "eval \"$$(luarocks path --bin)\" && make -s -C press"
 
 # prototype interface to google drive
-gdrive_install: venv
-	./venv/bin/pip install --upgrade pip -U -e ".[gdrive]"
-gdrivedev:
-	echo "status: running gdrive dev code"
+gpress_install: venv
+	./venv/bin/pip install --upgrade pip -U -e ".[gpress]"
+gpressdev:
+	echo "status: running gpress dev code"
 	./venv/bin/python -c 'import google' || \
-		echo "error: install google via: make gdrive_install"
-	./venv/bin/python -m ortho interact -i press/render/gdrive.py
-gdrive:
+		echo "error: install google via: make gpress_install"
+	./venv/bin/python -m ortho interact -i press/render/gpress.py
+gpress:
 	./venv/bin/gpress menu
 
 # publish to google drive by shortname
-gpub:
-	./venv/bin/gpress pub $(filter-out $@,$(MAKECMDGOALS))
+gdoc:
+	./venv/bin/gpress doc $(filter-out $@,$(MAKECMDGOALS))

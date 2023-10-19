@@ -9,7 +9,7 @@ import os
 #   because we found great utility from using ortho.textviewer in books scan
 from simple_term_menu import TerminalMenu
 
-from .render.gdrive import push_gdoc_basic
+from .render.gpress import push_gdoc_basic
 
 # settings
 raw_press_path = ('press/raw',)
@@ -97,6 +97,7 @@ class GDoc(Trestle):
 			raise Exception('failed to get a domain') 
 		if not isinstance(self.domain_out,list):
 			self.domain_out = [self.domain_out]
+		print(f'...!!!! {self.source_abs}')
 		push_gdoc_basic(
 			name=self.target,
 			base_dn=self.spot_out,
@@ -178,7 +179,10 @@ def gpress_menu():
 	kwargs = dict(
 		base_dn=found.spot_out,
 		name=found.target,
-		source=found.source)
+		source=found.source_abs,
+		users_readers=found.readers,
+		users_writers=found.writers,
+		domains_readers=found.domain_out)
 	print(f'status: push: {kwargs}')
 	push_gdoc_basic(**kwargs)
 
@@ -195,7 +199,7 @@ def cli_parent(ctx,debug):
 	ctx.ensure_object(dict)
 	ctx.obj['DEBUG'] = debug
 
-@cli_parent.command('pub')
+@cli_parent.command('doc')
 @click.help_option('-h','--help')
 @click.argument('target')
 def gpress_pub_cli(*,target): 

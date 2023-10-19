@@ -1,4 +1,9 @@
 raw/
 pub/*.html
+pub/*.docx
 render/
 makefile
+.DS_Store
+__init__.py
+__main__.py
+cli.py

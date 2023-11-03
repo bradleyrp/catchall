@@ -178,10 +178,11 @@ def push_gdoc_basic(*,name,base_dn,source,
 	# get base directory
 	base = get_or_create_top_folder(dn=base_dn)
 	if kind == None:
-		if source.endswith('.docx'):
+		if name.endswith('.docx'):
 			kind = 'docx'
 		else:
-			raise Exception(f'cannot infer kind for: {self.__dict__}')
+			raise Exception(f'cannot infer kind for: kind={kind}, name={name}, '
+				f'base_dn={base_dn}, source={source}')
 	# update file
 	try:
 		kwargs = dict(

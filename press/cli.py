@@ -97,7 +97,6 @@ class GDoc(Trestle):
 			raise Exception('failed to get a domain') 
 		if not isinstance(self.domain_out,list):
 			self.domain_out = [self.domain_out]
-		print(f'...!!!! {self.source_abs}')
 		push_gdoc_basic(
 			name=self.target,
 			base_dn=self.spot_out,
@@ -127,14 +126,18 @@ class GDrive(Trestle):
 	yaml_tag = '!gdrive'
 	def __init__(self,*,spot=None,domain=None):
 		self.spot = spot
-		self.domain = domain
+		# promote the domain to a list of readers
+		self.domain = [domain]
 	@property
 	def clean(self):
 		out = {}
 		if self.spot:
 			out['spot'] = self.spot
 		if self.domain:
-			out['domain'] = self.domain
+			# allow only one domain for now
+			if len(self.domain) > 1:
+				raise AssertionError
+			out['domain'] = self.domain[0]
 		return out
 
 # automatically collect tags after defining yaml objects

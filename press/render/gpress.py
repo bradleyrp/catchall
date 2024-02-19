@@ -15,9 +15,12 @@ SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 # settings
+# for other mimetypes, see https://stackoverflow.com/questions/11894772/\
+#   google-drive-mime-types-listing
 kind_mime = dict(
 	docx=('application/vnd.openxmlformats-'
-		'officedocument.wordprocessingml.document'))
+		'officedocument.wordprocessingml.document'),
+	pdf=('application/pdf'))
 
 def get_service():
 	"""
@@ -180,6 +183,8 @@ def push_gdoc_basic(*,name,base_dn,source,
 	if kind == None:
 		if name.endswith('.docx'):
 			kind = 'docx'
+		elif name.endswith('.pdf'):
+			kind = 'pdf'
 		else:
 			raise Exception(f'cannot infer kind for: kind={kind}, name={name}, '
 				f'base_dn={base_dn}, source={source}')

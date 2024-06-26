@@ -10,3 +10,6 @@ press/raw
 press/pub
 press/README.md
 **/.DS_Store
+dev.py
+**/*.ipynb
+data/

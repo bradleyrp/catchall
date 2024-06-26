@@ -13,10 +13,14 @@ ifeq ($(PYTHON_VERSION_OK), 0)
 endif
 
 # shortcut list
-.PHONY: install installall clean test notebook press
+.PHONY: \
+	install clean test notebook press \
+	install_sci install_booth develop_vineland
 all:
 	@echo "usage: \"make install\" creates a virtual environment"
 	@echo "usage: \"source ./go.sh\" sources the environment from anywhere"
+	@echo "usage: see also make targets:  install_sci, install_booth, " \
+		"develop_vineland, notebook"
 
 # install a local venv
 venv:
@@ -28,15 +32,25 @@ venv:
 
 # install the standard package
 install: venv .git
-	venv/bin/pip install -U -e .
+	venv/bin/pip install --use-deprecated=legacy-resolver -U -e .[easy]
 
 # install the science package
 HAS_MPICC := $(shell command -v mpicc 2> /dev/null)
-allinstall: venv .git
+install_sci: venv .git
 ifndef DOT
 	$(error "mpicc is not available")
 endif
-	venv/bin/pip install -U -e .[all]
+	venv/bin/pip install --use-deprecated=legacy-resolver -U -e .[all]
+
+# install the booth package
+install_booth: venv .git
+	venv/bin/pip install --use-deprecated=legacy-resolver -U -e .[booth]
+
+# link to a development vineland in a sister folder
+develop_vineland:
+	@if [ ! -e ./vineland ]; then \
+		echo "error: cannot find link ./vineland"; exit 1; fi
+	make -C $(realpath ./vineland) install
 
 # uninstall
 clean:

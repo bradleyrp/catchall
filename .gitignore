@@ -8,8 +8,11 @@ venv/
 **/*.so
 press/raw
 press/pub
+press/pics
 press/README.md
 **/.DS_Store
 dev.py
 **/*.ipynb
 data/
+credentials.json
+token.json

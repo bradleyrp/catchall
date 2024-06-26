@@ -67,12 +67,14 @@ beamer_figure = [[
 ]]
 
 function find_pics (path)
-  return 'pics/' .. path
+  result = 'pics/' .. path
+  return result
 end
 
 -- customizing paths for rendering on github-like platforms
 function find_pics_md (path)
-  return '../raw/pics/' .. path
+  result = '../pics/' .. path
+  return result
 end
 
 if FORMAT:match 'html' then
@@ -115,12 +117,13 @@ if FORMAT:match 'html' then
   end
 end
 
--- note that the docx version is incomplete
-if FORMAT:match 'markdown' or FORMAT:match 'docx' then
+-- dev: removed: or FORMAT:match 'docx' then
+if FORMAT:match 'markdown' then
+  find_pics_this = find_pics_md
   function CodeBlock (el)
     if el.classes[1] == custom_figure_tag then
       data = lyaml.load(el.text)
-      path_abs = find_pics_md(data['path'])
+      path_abs = find_pics_this(data['path'])
       -- selecting different methods to render the figure, since github does not
       --   make it possible to see captions. below we just tack it below so that
       --   the markdown is also readable
@@ -133,13 +136,14 @@ if FORMAT:match 'markdown' or FORMAT:match 'docx' then
         figure_src = string.format(markdown_figure,
           data['caption'],path_abs,data['caption'])
       end
-      return pandoc.RawBlock('markdown', figure_src)
+      out = pandoc.RawBlock('markdown', figure_src)
+      return out
     elseif el.classes[1] == custom_figure_left_tag then
       data = lyaml.load(el.text)
       if data["text"] == nil then
         error("custom figure got nil text")
       end
-      path_abs = find_pics_md(data['path'])
+      path_abs = find_pics_this(data['path'])
       -- selecting different methods to render the figure, since github does not
       --   make it possible to see captions. below we just tack it below so that
       --   the markdown is also readable
@@ -155,12 +159,33 @@ if FORMAT:match 'markdown' or FORMAT:match 'docx' then
       return pandoc.RawBlock('markdown', figure_src .. "\n" .. data['text'])
     elseif el.classes[1] == custom_figure_pair_tag then
       data = lyaml.load(el.text)
-      path_abs_0 = find_pics_md(data['path0'])
-      path_abs_1 = find_pics_md(data['path1'])
+      path_abs_0 = find_pics_this(data['path0'])
+      path_abs_1 = find_pics_this(data['path1'])
       figure_src = string.format('![%s](%s)\n*%s*\n\n![%s](%s)\n*%s*',
         data['caption0'],path_abs_0,data['caption0'],
         data['caption1'],path_abs_1,data['caption1'])
       return pandoc.RawBlock('markdown', figure_src)
+    elseif hidden_tags[el.classes[1]] then
+      return ""
+    else
+      return el
+    end
+  end
+  function Meta(m)
+    -- suppress metadata for the github markdown target
+    return {}
+  end
+end
+
+if FORMAT:match 'docx' then
+  find_pics_this = find_pics
+  function CodeBlock (el)
+    if el.classes[1] == custom_figure_tag then
+      data = lyaml.load(el.text)
+      path_abs = find_pics_this(data['path'])
+      -- dev: no capations
+      out = pandoc.Para({pandoc.Image({}, path_abs)})
+      return out
     elseif hidden_tags[el.classes[1]] then
       return ""
     else

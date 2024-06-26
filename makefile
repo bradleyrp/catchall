@@ -65,6 +65,27 @@ notebook:
 	echo "warning: use Firefox on MacOS due to weird blank page issue"
 	python -m notebook --no-browser
 
+# subvert makefile to send arguments to other consumers with filter-out
+# warning: this might affect other targets
+# via https://stackoverflow.com/a/6273809
+%:
+	@:
+
 # render documentation
 press:
 	@bash -c "eval \"$$(luarocks path --bin)\" && make -s -C press"
+
+# prototype interface to google drive
+gpress_install: venv
+	./venv/bin/pip install --upgrade pip -U -e ".[gpress]"
+gpressdev:
+	echo "status: running gpress dev code"
+	./venv/bin/python -c 'import google' || \
+		echo "error: install google via: make gpress_install"
+	./venv/bin/python -m ortho interact -i press/render/gpress.py
+gpress:
+	./venv/bin/gpress menu
+
+# publish to google drive by shortname
+gdoc:
+	./venv/bin/gpress doc $(filter-out $@,$(MAKECMDGOALS))

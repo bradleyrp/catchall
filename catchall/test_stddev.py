@@ -40,7 +40,8 @@ def compare_numpy_ext(n=20000):
 class TestStdDev(unittest.TestCase):
 
 	def test_bench(self):
-		return stddev_benchmark()
+		stddev_benchmark()
+		return
 
 	def test_accuracy(self):
 		ans_np,ans_ext = compare_numpy_ext()

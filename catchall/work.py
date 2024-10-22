@@ -108,6 +108,8 @@ def compute_worker(num=None,address=None,
 	Perform a series of standard deviation benchmark calculations as an example.
 	Uses the `save` function which relies on `H5WriteLocker` to queue writes. 
 	"""
+	if num == None:
+		raise Exception(f'need a number of iterations, received {num}')
 	# in catchall.parallel, we add rank to the seed, here we decrement one
 	np.random.seed(746574366 - 1)
 	if kwargs_h5 == None:
@@ -120,7 +122,11 @@ def compute_worker(num=None,address=None,
 		# select the appropriate interval, recording milliseconds here
 		ts = (dt.datetime.strftime(
 			dt.datetime.now(),'%Y.%m.%d.%H%M.%S.%f')[:-3])
-		data_this = stddev_benchmark()
+		print(f'status: iteration at {ts}')
+		data_this = stddev_benchmark(
+			# use a larger sequence for the test so we can watch the parallel
+			#   writes inside the log
+			testseq=range(1000, 20000, 1000))
 		save(
 			data=data_this,
 			filename=filename,

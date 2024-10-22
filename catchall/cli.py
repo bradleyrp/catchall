@@ -5,8 +5,8 @@ import click
 import time
 
 # import calculation functions
-from .work import compute_worker
-from .work import read_output
+from catchall.work import compute_worker
+from catchall.work import read_output
 
 @click.group('catchall')
 @click.help_option('-h','--help')
@@ -49,3 +49,6 @@ def worker_example_parallel_cli(*,num):
 def cli_hook():
 	"""Expose the CLI to __main__ and/or console_scripts."""
 	cli_parent(obj={})
+
+if __name__ == '__main__':
+	cli_hook()

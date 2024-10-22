@@ -31,6 +31,7 @@ def compute_worker_parallel(num=None):
 	#     File "h5py/h5g.pyx", line 166, in h5py.h5g.create
 	#     ValueError: Unable to create group (bad symbol table node signature)
 	return compute_worker(
+		num=num,
 		address=f'result',
 		do_lock=False,
 		write_mode='a',

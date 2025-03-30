@@ -16,3 +16,4 @@ dev.py
 data/
 credentials.json
 token.json
+.secret.openai.txt

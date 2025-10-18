@@ -25,7 +25,7 @@ if 0:
 	openai_key = "nope"
 	base_url = "http://127.0.0.1:8080/v1"
 else:
-	default_name = '3p5turbo'
+	default_name = '4o'
 	with open(os.path.join(
 		os.path.dirname(__file__),'..','.secret.openai.txt')) as fp:
 		openai_key = fp.read().strip()
@@ -55,6 +55,19 @@ def prepare_defaults(*,name):
 			answer=None,
 			model=('/Users/ryanbradley/stage/local-llm/'
 				'sandbox/model-llama3-8B--Instruct-4bit'),
+			temperature=1.0,
+			prompt=(
+				'You are a helpful and honest assistant '
+				'who values being precise and accurate.'),
+			top_p=1.0,
+			frequency_penalty=0,
+			presence_penalty=0,
+			max_tokens=2048,)
+		return settings
+	elif name == '4o':
+		settings = dict(
+			answer=None,
+			model='chatgpt-4o-latest', # 'gpt-4', # 'gpt-3.5-turbo',
 			temperature=1.0,
 			prompt=(
 				'You are a helpful and honest assistant '

@@ -50,7 +50,7 @@ install_booth: venv .git
 develop_vineland:
 	@if [ ! -e ./vineland ]; then \
 		echo "error: cannot find link ./vineland"; exit 1; fi
-	make -C $(realpath ./vineland) install
+	make -C $(realpath ./vineland) develop
 
 # uninstall
 clean:
